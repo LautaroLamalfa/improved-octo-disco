@@ -1,6 +1,5 @@
 let admin = require('firebase-admin')
 const config = require('../configFire')
-const { v4:uuid4 } = require("uuid")
 
 admin.initializeApp({
     credential: admin.credential.cert(config.firebase)
@@ -11,89 +10,70 @@ const db = admin.firestore();
 
 class ContenedorFirebase {
 
-constructor(name) {
-    this.coleccion = db.collection(name)
-}
-
-async save(nuevoElem) {
-    try{
-        let doc = this.coleccion.doc(`${uuid4()}`)
-        await doc.set(nuevoElem);
-        return { ...nuevoElem, id: doc.id }
-    }
-    catch(error){
-        throw Error("Error en el save");
+    constructor(nombreColeccion) {
+        this.coleccion = db.collection(nombreColeccion)
     }
 
-}
-
-
-async getById(num) {
-    try{
-        let doc = await this.coleccion.doc(num);
-        let item = (await doc.get()).data()
-        //Si existe el item lo envio, sino retorno falso
-        if(item){
-            item.id = num
-            return item
-        }else{
-            return false;
+    async listar(id) {
+        try {
+            const doc = await this.coleccion.doc(id).get();
+            if (!doc.exists) {
+                res.status(300).json(`Error al listar por id: no se encontró`)
+            } else {
+                const data = doc.data();
+                return { ...data, id }
+            }
+        } catch (error) {
+            res.status(300).json(`Error al listar por id: ${error}`)
         }
     }
-    catch(error){
-        throw Error("Error en getById");
+
+    async guardar(nuevoElem) {
+        try {
+            const guardado = await this.coleccion.add(nuevoElem);
+            return { ...nuevoElem, id: guardado.id }
+        } catch (error) {
+            res.status(300).json(`Error al guardar: ${error}`)
+        }
     }
 
-}
-
-async getAll() {
-        try{
-        const result = []
-        const data = await this.coleccion.get();
-        data.forEach(doc => {
-            result.push({ id: doc.id, ...doc.data() })
-        })
-        return result
-    }
-    catch(error){
-        console.log(error)
-    };
-
-}
-
-async deleteById(num) {
-    try{
-        const item = await this.coleccion.doc(num).delete();
-        return item
-    }
-    catch(error){
-        throw Error("Error en el deleteById");
+    async actualizar(nuevoElem) {
+        try {
+            const actualizado = await this.coleccion.doc(nuevoElem.id).set(nuevoElem);
+            return actualizado
+        } catch (error) {
+            res.status(300).json(`Error al actualizar: ${error}`)
+        }
     }
 
-}
-
-async deleteAll() {
-    try{
-        const docs = await this.getAll()
-        const ids = docs.map(d => d.id)
-        const promesas = ids.map(id => this.deleteById(id))
-        return {msg: "Todos los usuarios borrados"}
+    async borrar(id) {
+        try {
+            const item = await this.coleccion.doc(id).delete();
+            return item
+        } catch (error) {
+            res.status(300).json(`Error al borrar: ${error}`)
+        }
     }
-    catch(error){
-        throw Error("Error en el deleteAll()");
-    }
-}
 
-async update(nuevoElem) {
-    try {
-        let arrayChat = nuevoElem.arrayChat
-        const actualizado = await this.coleccion.doc(nuevoElem.id).set({arrayChat});
-        return actualizado
-    } catch (error) {
-        throw new Error(`Error al actualizar: ${error}`)
-    }
-}
+    async borrarAll() {
+        // version fea e ineficiente pero entendible para empezar
+        try {
+            const docs = await this.listarAll()
+            const ids = docs.map(d => d.id)
+            const promesas = ids.map(id => this.borrar(id))
+            const resultados = await Promise.allSettled(promesas)
+            const errores = resultados.filter(r => r.status == 'rejected')
+            if (errores.length > 0) {
+                res.status(300).json('no se borró todo. volver a intentarlo')
+            }
 
+        } catch (error) {
+            res.status(300).json(`Error al borrar: ${error}`)
+        }
+    }
+
+    async desconectar() {
+    }
 
 }
 
