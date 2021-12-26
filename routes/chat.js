@@ -1,5 +1,5 @@
 const express = require("express");
-const Contenedor = require("../src/daos/chat/firebase");
+const Contenedor = require("../src/daos/chat/mongodb");
 const { normalize, schema} = require("normalizr");
 
 const { Router } = express;
