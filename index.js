@@ -1,12 +1,34 @@
 const express = require ("express");
-const chatRoute = require("./routes/chat");
+const session = require ("express-session");
+const chatRoute = require ("./routes/chat");
+const MongoStore = require ("connect-mongo");
 const prodRoute = require ("./routes/productos");
+const login = require("./routes/login")
+const logout = require("./routes/logout")
 
 const app = express()
+
+const advancedOptions = { useNewUrlParcer: true, useUnifiedTopology: true}
 
 app.use(express.static(__dirname + "/public"))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
+
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: "mongodb+srv://Lautaro:LoL211255@clusterlol1.kugiw.mongodb.net/ClusterLoL1?retryWrites=true&w=majority",
+    mongoOptions: advancedOptions
+  }),
+  secret: "desafio10",
+  resave:false,
+  saveUninitialized:false,
+  rolling:true, 
+  cookie: {maxAge: 3000}
+}))
+
+
+app.use("/api/login", login)
+app.use("/api/logout", logout)
 app.use("/api/chat", chatRoute);
 app.use("/api/products", prodRoute)
 
