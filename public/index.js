@@ -7,13 +7,13 @@ socket.on("render", (data)=>{
 
 })
 
-function renderTabla(){
+renderTabla = () =>{
     const tabla = document.getElementById('tBody');
     const url = '/api/products';
 
     fetch(url)
     .then((resp) => resp.json())
-    .then(function(data) {
+    .then((data) => {
         tabla.innerHTML="";
         for (const pto of data) {
             let fila = document.createElement('tr');
@@ -30,19 +30,19 @@ function renderTabla(){
         }
       
     })
-    .catch(function(error) {
+    .catch((error) => {
       console.log(error);
     });
     return false;
 }
 
-function renderChat(){
+renderChat = () =>{
     const tabla = document.getElementById('tBodyChat');
     const url = '/api/chat';
 
     fetch(url)
     .then((resp) => resp.json())
-    .then(function(data) {
+    .then((data) => {
 
          const schemaAutor = new normalizr.schema.Entity('author')
          const mySchema = new normalizr.schema.Array({
@@ -74,13 +74,13 @@ function renderChat(){
         }
         
     })
-    .catch(function(error) {
+    .catch((error) => {
       console.log(error);
     });
     return false;
 }
 
-function enviarChat(){
+enviarChat = () =>{
     /* Armando request para la funcion fetch */
     const url = '/api/chat';
     let data = {
@@ -103,10 +103,11 @@ function enviarChat(){
     };
 
     fetch(url, request)
-        .then(function() {
+        .then(() =>{
             document.getElementById('msg').value = "";
             socket.emit("actualizacion");
     });
 
     return false;
 }
+

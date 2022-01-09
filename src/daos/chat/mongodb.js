@@ -13,4 +13,4 @@ class chatMongoDb extends ContenedorMongoDb {
     }
 }
 
-export default chatMongoDb
+module.exports = chatMongoDb

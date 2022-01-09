@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const config = require('../configMongo')
-const { asPOJO, renameField, removeField } = require ('../utils/objectUtils.js')
+const { asPOJO, renameField, removeField } = require ("../../utils/objectUtils")
 
 mongoose.connect(config.mongodb.cnxStr)
 
@@ -83,4 +83,4 @@ class ContenedorMongoDb {
     }
 }
 
-export default ContenedorMongoDb
+module.exports = ContenedorMongoDb
