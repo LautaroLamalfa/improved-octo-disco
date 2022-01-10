@@ -2,7 +2,9 @@ const mongoose = require('mongoose')
 const config = require('../configMongo')
 const { asPOJO, renameField, removeField } = require ("../../utils/objectUtils")
 
-mongoose.connect(config.mongodb.cnxStr)
+mongoose.connect(config.mongodb.cnxStr, {}, () => {
+    console.log("Conexion exitosa 👍")
+})
 
 class ContenedorMongoDb {
 
