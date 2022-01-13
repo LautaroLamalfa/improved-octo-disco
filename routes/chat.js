@@ -23,9 +23,18 @@ router.get("/", (req, res) => {
       //Chat Normalizado
       const normalizedChat = normalize(aux[0].arrayChat, mySchema)
 
+      //Chat Denormalizado
+      const denormalizeChat = denormalize(normalizedChat.result, mySchema, normalizedChat.entities)
+
+      //Compresion
+      const longNormalizado = JSON.stringify(normalizedChat).length
+      const longDenormalizado = JSON.stringify(denormalizeChat).length
+
+      const compresion = ((longNormalizado*100) / (longDenormalizado*100).toFixed(2))
 
       //Respuesta
-      res.send({normalizr: normalizedChat});
+      res.send({normalizr: normalizedChat, compresion});
+
 
     }
     catch(error){

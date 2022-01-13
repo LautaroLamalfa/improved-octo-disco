@@ -44,18 +44,12 @@ renderChat = () =>{
     .then((resp) => resp.json())
     .then((data) => {
 
-         const schemaAutor = new normalizr.schema.Entity('author')
-         const mySchema = new normalizr.schema.Array({
-             author: schemaAutor
-         })
-         const denormalizeChat = normalizr.denormalize(data.normalizr.result, mySchema, data.normalizr.entities)
- 
-         const longNormalizado = JSON.stringify(data.normalizr).length;
-         const longDenormalizado = JSON.stringify(denormalizeChat).length;
-         console.log(`Largo original:${longDenormalizado} Largo normalizado:${longNormalizado}`)
-         const compresion = ((longNormalizado*100) / longDenormalizado).toFixed(2)
+         let html = data.map(x => {
+             return `<p><strong>Compresion</strong>: ${x.compresion}</p>`;
+         }).join(" ");
 
-         document.getElementById('porcentaje').innerHTML= `Compresion: ${compresion}%`
+         document.getElementById('porcentaje').innerHTML= html
+
 
 
         tabla.innerHTML="";
@@ -66,7 +60,7 @@ renderChat = () =>{
             let aux2 = document.createElement('td');
             aux2.innerHTML = `<font color="brown">${chat.author.avatar}</font>`;
             let aux3 = document.createElement('td');
-            aux3.innerHTML = `<i><font color="green">${chat.text}</font></i>`;
+            aux3.innerHTML = `<i><font color="green">${chat.msg}</font></i>`;
             fila.appendChild(aux1);
             fila.appendChild(aux2);
             fila.appendChild(aux3);
@@ -87,12 +81,12 @@ enviarChat = () =>{
         author:{ 
             id: document.getElementById('email').value, 
             nombre: document.getElementById('name').value, 
-            apellido: document.getElementById('apellido').value, 
-            edad: document.getElementById('edad').value, 
-            alias: document.getElementById('alias').value,
+            apellido: document.getElementById('lname').value, 
+            edad: document.getElementById('age').value, 
+            alias: document.getElementById('nickname').value,
             avatar: document.getElementById('avatar').value
         },
-        text: document.getElementById('msg').value
+        msg: document.getElementById('msg').value
     }
     const request = {
         method: 'POST',
